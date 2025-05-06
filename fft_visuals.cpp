@@ -4,7 +4,7 @@
 #include "led_matrix.h"
 
 const size_t channel_count= 1; 
-const size_t bits_per_sample = 32; 
+const size_t bits_per_sample = 16; 
 const size_t samples_per_second = 40000; 
 const size_t freq_window_count = 8; 
 const size_t freq_window = (samples_per_second/2)/freq_window_count; 
@@ -13,21 +13,51 @@ const float min_frequency = 500;
 
 const size_t min_display_rows = 1; 
 const size_t max_display_rows = 8;  
-const float magnitude_division = 25000000; 
+const float magnitude_division = 2; 
 
 AudioInfo info(samples_per_second, channel_count, bits_per_sample);
 I2SStream i2sStream; // Access I2S as stream
-CsvOutput<int32_t> csvOutput(Serial);
+AnalogAudioStream analogIn; 
 AudioRealFFT fft; 
-StreamCopy copier(fft, i2sStream); // copy i2sStream to csvOutput
+StreamCopy copier(fft, analogIn); // copy i2sStream to csvOutput
 static Adafruit_NeoPixel *pixels;  
 
 static float channels[num_channels]; 
+static uint32_t channel_colors[num_channels]; 
 static size_t runningAverageHeights[num_channels] = {0}; 
 
 void printChannels() {
   for(size_t i = 0; i < num_channels; i++) {
     Serial.printf("%f, ", channels[i]); 
+  }
+  Serial.println(); 
+}
+
+uint32_t intToColor(uint32_t color) {
+  // for now just RGB order
+
+  if (color <= 0xff) {
+    return pixels->Color(color, 0xff - color, 0); 
+  }
+  uint8_t normalized_color = color % 0xff; 
+  if(color <= 0xff *2) {
+    return pixels->Color(0xff- normalized_color, 0, color); 
+  }
+  
+  if(color <= 0xff * 3) {
+      return pixels->Color(0, normalized_color, 0xff - normalized_color); 
+  }
+
+
+}
+
+void initChannelColors() {
+  size_t colorVal; 
+  for(size_t i = 0; i < num_channels; i++) {
+    colorVal = (i * 0xff * 3 / num_channels); 
+    Serial.printf("%u, " ,colorVal); 
+    
+    channel_colors[i] = intToColor(colorVal); 
   }
   Serial.println(); 
 }
@@ -41,10 +71,10 @@ void displayLEDChannels() {
     runningAverageHeights[col] = (height + runningAverageHeights[col]) / 2u; 
     for(size_t row = 0; row < PIXEL_ROWS; row++) {
       if(row < runningAverageHeights[col]) {
-        setArrColor(pixels, row, col, pixels->Color(255, 0, 0)); 
+        setArrColor(pixels, row, col, channel_colors[col]); 
       }
       else {
-        setArrColor(pixels, row, col, pixels->Color(0, 0, 0));         
+        setArrColor(pixels, row, col, 0);         
       }
     }
   }
@@ -76,7 +106,7 @@ void fftResult(AudioFFTBase &fft){
       channels[i] = avg_mag; 
 
     }   
-    printChannels(); 
+    // printChannels(); 
     displayLEDChannels(); 
 }
 
@@ -93,14 +123,13 @@ void fft_visuals_init(Adafruit_NeoPixel *px) {
     pixels = px; 
 
     AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Warning);
+
+    initChannelColors(); 
     
-    auto cfg = i2sStream.defaultConfig(RX_MODE);
-    cfg.copyFrom(info);
-    cfg.i2s_format = I2S_STD_FORMAT; // or try with I2S_LSB_FORMAT
-    cfg.is_master = true;
-    cfg.use_apll = true; 
-    cfg.pin_mck = 3; 
-    i2sStream.begin(cfg);
+    auto cfgRx = analogIn.defaultConfig(RX_MODE);
+    cfgRx.copyFrom(info); 
+    analogIn.begin(cfgRx);
+
 
     auto fft_cfg = fft.defaultConfig(); 
     fft_cfg.length = 512; 
@@ -108,13 +137,13 @@ void fft_visuals_init(Adafruit_NeoPixel *px) {
     fft_cfg.sample_rate = samples_per_second; 
     fft_cfg.bits_per_sample = bits_per_sample; 
     fft_cfg.callback = &fftResult; 
-    fft_cfg.window_function = new BufferedWindow(new Hamming());
+    // fft_cfg.window_function = new BufferedWindow(new Hamming());
     fft.begin(fft_cfg);
 
     Serial.printf("buffer size: %u\n", copier.bufferSize()); 
 
     // make sure that we have the correct channels set up
-    csvOutput.begin(info);
+    // csvOutput.begin(info);
 }
 
 // Arduino loop - copy data
