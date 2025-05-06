@@ -35,7 +35,6 @@ void printChannels() {
 
 uint32_t intToColor(uint32_t color) {
   // for now just RGB order
-
   if (color <= 0xff) {
     return pixels->Color(color, 0xff - color, 0); 
   }
@@ -47,8 +46,6 @@ uint32_t intToColor(uint32_t color) {
   if(color <= 0xff * 3) {
       return pixels->Color(0, normalized_color, 0xff - normalized_color); 
   }
-
-
 }
 
 void initChannelColors() {
@@ -98,15 +95,10 @@ void fftResult(AudioFFTBase &fft){
         if(i*magnitudes_in_range + j >= fft_size) {
           Serial.print("WARNGING!!!!!"); 
         }
-      //  Serial.printf("%fHz: %u, \n", fft.frequency(i), magnitudes[i]);
         avg_mag += magnitudes[bin] / magnitudes_in_range; 
       }
-      // avg_mag -= 100000000;
-      // avg_mag /= 100000; 
       channels[i] = avg_mag; 
-
     }   
-    // printChannels(); 
     displayLEDChannels(); 
 }
 
@@ -129,8 +121,7 @@ void fft_visuals_init(Adafruit_NeoPixel *px) {
     auto cfgRx = analogIn.defaultConfig(RX_MODE);
     cfgRx.copyFrom(info); 
     analogIn.begin(cfgRx);
-
-
+    
     auto fft_cfg = fft.defaultConfig(); 
     fft_cfg.length = 512; 
     fft_cfg.channels = channel_count;
@@ -141,9 +132,6 @@ void fft_visuals_init(Adafruit_NeoPixel *px) {
     fft.begin(fft_cfg);
 
     Serial.printf("buffer size: %u\n", copier.bufferSize()); 
-
-    // make sure that we have the correct channels set up
-    // csvOutput.begin(info);
 }
 
 // Arduino loop - copy data
