@@ -13,7 +13,7 @@ const float min_frequency = 500;
 
 const size_t min_display_rows = 1; 
 const size_t max_display_rows = 8;  
-const float magnitude_division = 2; 
+const float magnitude_division = 2.5; 
 
 AudioInfo info(samples_per_second, channel_count, bits_per_sample);
 I2SStream i2sStream; // Access I2S as stream
