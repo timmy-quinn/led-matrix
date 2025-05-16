@@ -1,3 +1,5 @@
+#include "fft_visuals.h"
+
 #include "AudioConfigLocal.h"
 #include "AudioTools.h"
 #include "AudioTools/AudioLibs/AudioRealFFT.h" 
@@ -24,7 +26,7 @@ static Adafruit_NeoPixel *pixels;
 
 static float channels[num_channels]; 
 static uint32_t channel_colors[num_channels]; 
-static size_t runningAverageHeights[num_channels] = {0}; 
+
 
 void printChannels() {
   for(size_t i = 0; i < num_channels; i++) {
@@ -33,20 +35,7 @@ void printChannels() {
   Serial.println(); 
 }
 
-uint32_t intToColor(uint32_t color) {
-  // for now just RGB order
-  if (color <= 0xff) {
-    return pixels->Color(color, 0xff - color, 0); 
-  }
-  uint8_t normalized_color = color % 0xff; 
-  if(color <= 0xff *2) {
-    return pixels->Color(0xff- normalized_color, 0, color); 
-  }
-  
-  if(color <= 0xff * 3) {
-      return pixels->Color(0, normalized_color, 0xff - normalized_color); 
-  }
-}
+
 
 void initChannelColors() {
   size_t colorVal; 
@@ -54,18 +43,19 @@ void initChannelColors() {
     colorVal = (i * 0xff * 3 / num_channels); 
     Serial.printf("%u, " ,colorVal); 
     
-    channel_colors[i] = intToColor(colorVal); 
+    channel_colors[i] = intToColor(colorVal, pixels); 
   }
   Serial.println(); 
 }
 
 void displayLEDChannels() {
   size_t height = min_display_rows; 
+  static size_t runningAverageHeights[num_channels] = {0}; 
   for(size_t col = 0; col < num_channels; col++) {
     height = static_cast <size_t>(channels[col]/magnitude_division); 
-    height = min(height, max_display_rows);
+    height = min(height, 9u);
     height = max(height, min_display_rows);
-    runningAverageHeights[col] = (height + runningAverageHeights[col]) / 2u; 
+    runningAverageHeights[col] = (height + runningAverageHeights[col])/ 2u; 
     for(size_t row = 0; row < PIXEL_ROWS; row++) {
       if(row < runningAverageHeights[col]) {
         setArrColor(pixels, row, col, channel_colors[col]); 
@@ -110,10 +100,9 @@ void plotAllMagnitudes(AudioFFTBase &fft) {
   Serial.println(); 
 }
 
-// Arduino Setup
-void fft_visuals_init(Adafruit_NeoPixel *px) {
-    pixels = px; 
 
+void fft_visuals_state::entry() {
+    pixels = mPixels; 
     AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Warning);
 
     initChannelColors(); 
@@ -128,13 +117,16 @@ void fft_visuals_init(Adafruit_NeoPixel *px) {
     fft_cfg.sample_rate = samples_per_second; 
     fft_cfg.bits_per_sample = bits_per_sample; 
     fft_cfg.callback = &fftResult; 
-    // fft_cfg.window_function = new BufferedWindow(new Hamming());
     fft.begin(fft_cfg);
 
     Serial.printf("buffer size: %u\n", copier.bufferSize()); 
 }
 
 // Arduino loop - copy data
-void fft_visuals_update() {
+void fft_visuals_state::update() {
     copier.copy();
+}
+
+void fft_visuals_state::exit() {
+  fft.end();
 }
