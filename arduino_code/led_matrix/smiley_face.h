@@ -6,6 +6,7 @@
 class smiley_face_state : public led_matrix_state {
   public: 
     smiley_face_state(Adafruit_NeoPixel *pix): led_matrix_state(pix) {}
+    void entry() override; 
     void update() override;
 }; 
 

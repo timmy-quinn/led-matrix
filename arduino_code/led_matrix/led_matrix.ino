@@ -15,7 +15,12 @@
 #define PIXEL_PIN 13
 #define PIXEL_BRIGHTNESS 15
 
+#define BTN_HIGH_PIN 33U
 #define STATE_PIN 25U
+#define GAIN_PIN 15U
+
+#define GAIN_40DB HIGH
+#define GAIN_50DB LOW
 
 static Adafruit_NeoPixel pixels(PIXEL_COUNT, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
@@ -24,9 +29,11 @@ fft_visuals_state fft_state(&pixels);
 plasma_state plas_state(&pixels); 
 
 static led_matrix_state *matrix_states[] = {
-                                            &plas_state, 
-                                            static_cast<led_matrix_state *>(&smiley_state), 
-                                            static_cast<led_matrix_state *>(&fft_state)}; 
+  &fft_state, 
+  &smiley_state, 
+  &plas_state, 
+
+}; 
 
 void setup() { 
   pinMode(LED_BUILTIN, OUTPUT); 
@@ -38,6 +45,8 @@ void setup() {
   pixels.begin(); 
   pixels.setBrightness(PIXEL_BRIGHTNESS); 
 
+  pinMode(BTN_HIGH_PIN, OUTPUT);
+  digitalWrite(BTN_HIGH_PIN, HIGH); 
   state_machine_init(STATE_PIN, matrix_states, sizeof(matrix_states)/sizeof(matrix_states[0])); 
   
   Serial.print("Setup complete"); 
