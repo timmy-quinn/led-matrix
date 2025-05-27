@@ -57,13 +57,52 @@ void loop() {
 }
 
 ```
+### Hello world  
+Another common test program is the hello world. In fact, when learning a 
+new programming language, you're going to write a hello world program
+before anything else. 
+
+```
+void setup() {
+  Serial.begin(115200); 
+}
+
+void loop() {
+  Serial.println("Hello World"); 
+  delay(3000); 
+}
+
+```
+
+### Programing basics: What is code?  
+  
+The snippet shown above is an example of C++ code. But what you see above 
+is not actually what is uploaded to our ESP32. 
+
 ### Building blocks of a program
  
+#### Variables
+Variables are the way we store information in a program. There are few 
+different variable types in C++, which are defined by specific keywords.  
 
+Here are some of the more common types we will encounter in this class. 
+  
+- <span style="color:teal">int</span>: 
+stores whole numbers, typically between -2,147,483,648 to 2,147,483,647
+- <span style="color:teal">float</span>: 
+stores decimal values, between -3.4^38 to -3.4^38. 
+- <span style="color:teal">bool</span>: 
+represents either true or false, (1 or 0). bool stands for boolean
+  
+```
+int a = 3; 
+int b = 2; 
+int c = a + b;  // c is now equal to 5
 
-**Variables:** 
+bool d = false; 
+bool c = true; 
+```
 
-### Hello world
 
 ## Soldering
 
