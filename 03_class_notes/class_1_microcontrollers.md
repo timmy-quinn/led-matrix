@@ -96,7 +96,7 @@ the port your ESP32 is connected to. Make sure the baud rate matches the rate th
 repeatedly.  
 
 > :memo: **Challenge**  
-> Modify the above code to say something else.   
+> Modify the above code to send a message of your choice!    
 
 ### Programing basics: What is code?  
   
@@ -174,10 +174,61 @@ void loop() {
   int sum = add(a, b); 
   Serial.print("Function result:");
   Serial.println(sum); 
+  delay(10000); 
 }
 ```
 > :memo: **Challenge**  
 > Write a function that takes an integer as an argument and returns the square of 
 > that integer.   
+> **Bonus**  
+> In the function, print the result in this format: ```` var squared equals result````  
 
+Something else to note about a function is that variables declared within a 
+function cannot be accessed outside of that function. 
+
+#### Building Blocks: if else  
+We don't always want out program to do the same thing every time. We want our 
+little computer to be able to make some decisions. We want to be able to turn 
+on a light if a button is pressed. We want to be able to stop a motor if a 
+robotic arm has reached the correct position. 
   
+How are we going to do this? This is where if else statements come in. These 
+simple statements when coupled with other code can enable some very complex, 
+intelligent behavior.  
+```
+void print_greater_than_equal(int test, int threshold) {
+  if(test >= threshold) {
+    print("Success!!!"); 
+  }
+  else {
+    print("Failure ");
+  }
+}
+
+void print_comparison(int a, int b) {
+  if(a > b) {
+    Serial.println("Greater than"); 
+  }
+  else if(a < b) {
+    Serial.println("Less than"); 
+  }
+  else {
+    Serial.println("Equal"); 
+  }
+}
+
+void loop() {
+  int threshold = 10; 
+
+  print_comparison(1, threshold); 
+  print_comparison(12, threshold); 
+  print_comparison(threshold, threshold); 
+  print_comparison(threshold - 1, threshold); 
+
+  Serial.println();
+  Serial.println("Greater than equal function"); 
+  print_greater_than_equal(threshold, threshold);  
+  print_greater_than_equal(threshold - 1, threshold); 
+
+}
+```
