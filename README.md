@@ -6,3 +6,4 @@ adhered to a laser-cut baseboard, and mounted in a 3D printed case.
 Control is provided by an ESP32 microcontroller. Code written in the 
 Arduino IDE. 
 
+_Programming and assembly instructions to come._
