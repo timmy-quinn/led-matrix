@@ -90,7 +90,13 @@ void loop() {
 }
 
 ```
-After you upload your code to your microcontroller, go to 
+After you upload your code to your microcontroller, click the Serial Monitor 
+button in the upper right corner of the Arduino IDE. Make sure the port matches
+the port your ESP32 is connected to. Make sure the baud rate matches the rate the ESP32 is set to. You should see the words *Hello World* being printed out 
+repeatedly.  
+
+> :memo: **Challenge**  
+> Modify the above code to say something else.   
 
 ### Programing basics: What is code?  
   
@@ -99,7 +105,7 @@ is not actually what is uploaded to our ESP32.
 
 ### Building blocks of a program
  
-#### Variables
+#### Building Block: Variables
 Variables are the way we store information in a program. There are few 
 different variable types in C++, which are defined by specific keywords.  
 
@@ -112,16 +118,66 @@ stores decimal values, between -3.4^38 to -3.4^38.
 - <span style="color:teal">bool</span>: 
 represents either true or false, (1 or 0). bool stands for boolean
   
+Now, here we can get to the fun part and can play around with our newfound 
+understanding of variables. 
+
+*Example*  
+
+We can perform basic mathematic operations on our variables as well. 
 ```
-int a = 3; 
-int b = 2; 
-int c = a + b;  // c is now equal to 5
+void loop() {
+  int a = 100; 
+  Serial.print("Original: "); 
+  Serial.println(a); 
 
-bool d = false; 
-bool c = true; 
+  a = a + 2; 
+  Serial.print("Plus 2: "); 
+  Serial.println(a); 
+
+  a = a - 1; 
+  Serial.print("Minus 1: "); 
+  Serial.println(a); 
+
+  a = a * 4; 
+  Serial.print("Times 4: "); 
+  Serial.println(a); 
+
+  a = a / 2; 
+  Serial.print("Divide 2: "); 
+  Serial.println(a); 
+
+  Serial.println(); 
+  
+  delay(5000);
+}
 ```
 
+#### Building Block: Functions 
 
-## Soldering
+So it turns out that we've already used functions. ````setup()````, 
+````loop()````, ````Serial.println()```` and ````Serial.print()```` are all 
+functions. 
+  
+What is a function, and why do we use it? A function is a reusable block of code 
+which performs a specific task. This is super useful in programming. Oftentimes
+we want to perform the same task in many different contexts. We can write 
+functions which take certain inputs, and then perform some operations on those 
+inputs to get a result. 
 
-##  
+*Example*
+```
+int add(int a, int b) {
+  return a + b; 
+}
+
+void loop() {
+  int sum = add(a, b); 
+  Serial.print("Function result:");
+  Serial.println(sum); 
+}
+```
+> :memo: **Challenge**  
+> Write a function that takes an integer as an argument and returns the square of 
+> that integer.   
+
+  
