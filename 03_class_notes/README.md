@@ -27,6 +27,13 @@ from.
 #### Inputs and outputs
 ![Inputs and outputs](Photos/inputs_and_outputs.jpg)
 
+  
+## Setup
+
+1. Download the Arduino IDE [here](https://www.arduino.cc/en/software/)
+2. Follow these [instructions](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html) 
+to set up your ESP32 board. 
+  
 ## Programming your microcontroller 
 ### Blinky 
 When getting started with a new devboard, microcontroller, or project, you're 
@@ -64,15 +71,26 @@ before anything else.
 
 ```
 void setup() {
+  // Create a serial connection
+  // This will enable us to send data 
+  // From our microcontroller to our 
+  // computer one bit at a time. 
+  // 115200 is the speed at which we can
+  // send data. This is called the baud 
+  // rate and it is measured in bits per
+  // second. 
   Serial.begin(115200); 
 }
 
 void loop() {
+  // Send a string of characters to 
+  // our computer. 
   Serial.println("Hello World"); 
   delay(3000); 
 }
 
 ```
+After you upload your code to your microcontroller, go to 
 
 ### Programing basics: What is code?  
   
