@@ -1,5 +1,6 @@
 #include "fft_visuals.h"
 
+#include "driver/adc.h"
 #include "AudioConfigLocal.h"
 #include "AudioTools.h"
 #include "AudioTools/AudioLibs/AudioRealFFT.h" 
@@ -10,12 +11,12 @@ const size_t bits_per_sample = 16;
 const size_t samples_per_second = 40000; 
 const size_t freq_window_count = 8; 
 const size_t freq_window = (samples_per_second/2)/freq_window_count; 
-const size_t num_channels = 8; 
+const size_t num_columns = 8; 
 const float min_frequency = 500; 
 
 const size_t min_display_rows = 1; 
 const size_t max_display_rows = 8;  
-const float magnitude_division = 2.5; 
+const float magnitude_division = 500; 
 
 AudioInfo info(samples_per_second, channel_count, bits_per_sample);
 I2SStream i2sStream; // Access I2S as stream
@@ -24,38 +25,87 @@ AudioRealFFT fft;
 StreamCopy copier(fft, analogIn); // copy i2sStream to csvOutput
 static Adafruit_NeoPixel *pixels;  
 
-static float channels[num_channels]; 
-static uint32_t channel_colors[num_channels]; 
+static float min_test = 10000000; 
+static float max_test = 0;
 
+static uint32_t channel_colors[num_columns];
+static float channels[num_columns]; 
 
-void printChannels() {
-  for(size_t i = 0; i < num_channels; i++) {
+static void printChannels(); 
+static void plotAllMagnitudes(AudioFFTBase &fft); 
+
+// Debug Functions
+// Not neccessary for FFT display, but useful when debugging 
+static void printChannels() {
+  for(size_t i = 0; i < num_columns; i++) {
     Serial.printf("%f, ", channels[i]); 
   }
   Serial.println(); 
 }
 
-
-
-void initChannelColors() {
-  size_t colorVal; 
-  for(size_t i = 0; i < num_channels; i++) {
-    colorVal = (i * 0xff * 3 / num_channels); 
-    Serial.printf("%u, " ,colorVal); 
-    
-    channel_colors[i] = intToColor(colorVal, pixels); 
+static void plotAllMagnitudes(AudioFFTBase &fft) {
+  auto magnitudes = fft.magnitudes(); 
+  for(size_t i = 0; i < fft.size(); i++) {
+    Serial.printf("%f, ", magnitudes[i]); 
   }
   Serial.println(); 
 }
 
-void displayLEDChannels() {
+// FFT Display Functions
+
+// Initialize the array which stores the colors for each channel
+void initColumnColors() {
+  size_t colorVal; 
+  for(size_t i = 0; i < num_columns; i++) {
+    colorVal = (i * 0xff * 3 / num_columns);
+    channel_colors[i] = intToColor(colorVal, pixels); 
+  }
+}
+
+static size_t runningAverageHeights[num_columns] = {0}; 
+
+static void runningAverage() {
   size_t height = min_display_rows; 
-  static size_t runningAverageHeights[num_channels] = {0}; 
-  for(size_t col = 0; col < num_channels; col++) {
-    height = static_cast <size_t>(channels[col]/magnitude_division); 
+  for(size_t col = 0; col < num_columns; col++) {
+    height = static_cast <size_t>(channels[col]/magnitude_division);
     height = min(height, 9u);
     height = max(height, min_display_rows);
     runningAverageHeights[col] = (height + runningAverageHeights[col])/ 2u; 
+  }
+  pixels->show();
+}
+
+
+static void averageBinsToColumns() {
+    float diff;
+    auto magnitudes = fft.magnitudes(); 
+    size_t fft_size = fft.size(); 
+    float start_freq, end_freq, avg_mag;
+    size_t bins_per_column = fft_size/num_columns;
+    size_t bin; 
+
+    // Average bins to columns
+    // Perform running average
+    // Scale down
+    // Display
+    for(size_t i = 0; i < num_columns; i++) {
+      avg_mag = 0; 
+      for(size_t j = 0; j < bins_per_column; j++) {
+        bin = i * bins_per_column + j; 
+        if(fft.frequency(bin) < min_frequency) {
+          continue; 
+        }
+        if(i*bins_per_column + j >= fft_size) {
+          Serial.print("WARNGING!!!!!"); 
+        }
+        avg_mag += magnitudes[bin] / bins_per_column; 
+      }
+      channels[i] = avg_mag; 
+    } 
+}
+
+static void displayColumns() {
+  for(size_t col = 0; col < num_columns; col++) {
     for(size_t row = 0; row < PIXEL_ROWS; row++) {
       if(row < runningAverageHeights[col]) {
         setArrColor(pixels, row, col, channel_colors[col]); 
@@ -65,39 +115,13 @@ void displayLEDChannels() {
       }
     }
   }
-  pixels->show(); 
+  pixels->show();
 }
 
 void fftResult(AudioFFTBase &fft){
-    float diff;
-    auto magnitudes = fft.magnitudes(); 
-    size_t fft_size = fft.size(); 
-    float start_freq, end_freq, avg_mag;
-    size_t magnitudes_in_range = fft_size/8;
-    size_t bin; 
-    for(size_t i = 0; i < 8; i++) {
-      avg_mag = 0; 
-      for(size_t j = 0; j < magnitudes_in_range; j ++) {
-        bin = i * magnitudes_in_range + j; 
-        if(fft.frequency(bin) < min_frequency) {
-          continue; 
-        }
-        if(i*magnitudes_in_range + j >= fft_size) {
-          Serial.print("WARNGING!!!!!"); 
-        }
-        avg_mag += magnitudes[bin] / magnitudes_in_range; 
-      }
-      channels[i] = avg_mag; 
-    }   
-    displayLEDChannels(); 
-}
-
-void plotAllMagnitudes(AudioFFTBase &fft) {
-  auto magnitudes = fft.magnitudes(); 
-  for(size_t i = 0; i < fft.size(); i++) {
-    Serial.printf("%f, ", magnitudes[i]); 
-  }
-  Serial.println(); 
+  averageBinsToColumns(); 
+  runningAverage();  
+  displayColumns(); 
 }
 
 
@@ -105,10 +129,11 @@ void fft_visuals_state::entry() {
     pixels = mPixels; 
     AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Warning);
 
-    initChannelColors(); 
+    initColumnColors(); 
     
     auto cfgRx = analogIn.defaultConfig(RX_MODE);
-    cfgRx.copyFrom(info); 
+    cfgRx.copyFrom(info);
+    cfgRx.adc_channels[0] = ADC_CHANNEL_4;
     analogIn.begin(cfgRx);
     
     auto fft_cfg = fft.defaultConfig(); 
@@ -122,10 +147,12 @@ void fft_visuals_state::entry() {
     Serial.printf("buffer size: %u\n", copier.bufferSize()); 
 }
 
+
 // Arduino loop - copy data
 void fft_visuals_state::update() {
     copier.copy();
 }
+
 
 void fft_visuals_state::exit() {
   fft.end();

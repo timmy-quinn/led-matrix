@@ -17,7 +17,7 @@
 
 #define BTN_HIGH_PIN 33U
 #define STATE_PIN 25U
-#define GAIN_PIN 15U
+#define GAIN_PIN 5U
 
 #define GAIN_40DB HIGH
 #define GAIN_50DB LOW
