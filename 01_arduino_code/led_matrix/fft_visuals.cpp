@@ -70,17 +70,14 @@ static void runningAverage() {
   size_t height = min_display_rows;
   int current_magnitude;  
   for(size_t col = 0; col < num_columns; col++) {
-    // current_magnitude = static_cast <int>(channels[col]); 
     runningAverageMagnitude[col] = (static_cast <int>(channels[col]) + runningAverageMagnitude[col])/ 2; 
   }
-  pixels->show();
 }
 
 
 static void averageBinsToColumns() {
     float diff;
     auto magnitudes = fft.magnitudes(); 
-    size_t fft_size = fft.size(); 
     float start_freq, end_freq, avg_mag;
     size_t bins_per_column = fft_size/num_columns;
     size_t bin; 
@@ -91,9 +88,6 @@ static void averageBinsToColumns() {
         bin = i * bins_per_column + j; 
         if(fft.frequency(bin) < min_frequency) {
           continue; 
-        }
-        if(i*bins_per_column + j >= fft_size) {
-          Serial.print("WARNGING!!!!!"); 
         }
         avg_mag += magnitudes[bin] / bins_per_column; 
       }
@@ -122,7 +116,7 @@ static void displayColumns() {
   pixels->show();
 }
 
-void fftResult(AudioFFTBase &fft){
+void displayFFT(AudioFFTBase &fft){
   averageBinsToColumns(); 
   runningAverage();  
   displayColumns(); 
@@ -145,7 +139,7 @@ void fft_visuals_state::entry() {
     fft_cfg.channels = channel_count;
     fft_cfg.sample_rate = samples_per_second; 
     fft_cfg.bits_per_sample = bits_per_sample; 
-    fft_cfg.callback = &fftResult; 
+    fft_cfg.callback = &displayFFT; 
     fft.begin(fft_cfg);
 
     Serial.printf("buffer size: %u\n", copier.bufferSize()); 
