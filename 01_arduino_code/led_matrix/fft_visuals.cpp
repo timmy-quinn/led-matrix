@@ -12,11 +12,12 @@ const size_t samples_per_second = 40000;
 const size_t freq_window_count = 8; 
 const size_t freq_window = (samples_per_second/2)/freq_window_count; 
 const size_t num_columns = 8; 
-const float min_frequency = 500; 
+const float min_frequency = 800; 
 
 const size_t min_display_rows = 1; 
 const size_t max_display_rows = 8;  
-const float magnitude_division = 500; 
+const size_t magnitude_division =200; 
+const size_t magnitude_offset = 1350; 
 
 AudioInfo info(samples_per_second, channel_count, bits_per_sample);
 I2SStream i2sStream; // Access I2S as stream
@@ -63,14 +64,14 @@ void initColumnColors() {
 }
 
 static size_t runningAverageHeights[num_columns] = {0}; 
+static int runningAverageMagnitude[num_columns] = {0}; 
 
 static void runningAverage() {
-  size_t height = min_display_rows; 
+  size_t height = min_display_rows;
+  int current_magnitude;  
   for(size_t col = 0; col < num_columns; col++) {
-    height = static_cast <size_t>(channels[col]/magnitude_division);
-    height = min(height, 9u);
-    height = max(height, min_display_rows);
-    runningAverageHeights[col] = (height + runningAverageHeights[col])/ 2u; 
+    // current_magnitude = static_cast <int>(channels[col]); 
+    runningAverageMagnitude[col] = (static_cast <int>(channels[col]) + runningAverageMagnitude[col])/ 2; 
   }
   pixels->show();
 }
@@ -84,10 +85,6 @@ static void averageBinsToColumns() {
     size_t bins_per_column = fft_size/num_columns;
     size_t bin; 
 
-    // Average bins to columns
-    // Perform running average
-    // Scale down
-    // Display
     for(size_t i = 0; i < num_columns; i++) {
       avg_mag = 0; 
       for(size_t j = 0; j < bins_per_column; j++) {
@@ -104,10 +101,17 @@ static void averageBinsToColumns() {
     } 
 }
 
+static size_t mapMagnitudeToHeight(int magnitude) {
+  size_t corrected_magnitude = (magnitude > magnitude_offset) ? magnitude - magnitude_offset : 0; 
+  return static_cast <size_t>( corrected_magnitude / magnitude_division);
+}
+
 static void displayColumns() {
+  size_t height; 
   for(size_t col = 0; col < num_columns; col++) {
+    height = mapMagnitudeToHeight(runningAverageMagnitude[col]); 
     for(size_t row = 0; row < PIXEL_ROWS; row++) {
-      if(row < runningAverageHeights[col]) {
+      if(row <= height) {
         setArrColor(pixels, row, col, channel_colors[col]); 
       }
       else {
