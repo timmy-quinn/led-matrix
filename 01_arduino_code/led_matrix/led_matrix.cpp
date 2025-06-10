@@ -1,5 +1,6 @@
 #include "led_matrix.h"
 
+// Wrote this before I learned about the Adafruit Neopixel Hue function
 uint32_t intToColor(uint32_t color, Adafruit_NeoPixel *pixels) {
   // for now just RGB order
   if (color <= 0xff) {
