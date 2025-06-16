@@ -15,8 +15,8 @@ double vImag[SAMPLE_COUNT];
 ArduinoFFT<double> FFT = ArduinoFFT<double>(vReal, vImag, SAMPLE_COUNT, SAMPLING_FREQUENCY);
 
 // FFT Processing
-const double MAGNITUDE_SCALE_FACTOR =35.0; 
-const double MAGNITUDE_THRESHOLD = 75.0;
+const double MAGNITUDE_SCALE_FACTOR =200.0; 
+const double MAGNITUDE_THRESHOLD = .0;
 
 const int PIXEL_COUNT = 64; 
 const int PIXEL_PIN = 13; 
@@ -27,6 +27,8 @@ const uint16_t PIXEL_COLUMNS = 8;
 
 
 const size_t BINS_PER_COL = USABLE_MAGNITUDE_COUNT / PIXEL_COLUMNS; 
+
+static double multipliers[PIXEL_COLUMNS] = {0.25, 1, 1.5, 1.5, 2, 2.0, 2.5, 3}; 
 
 static double averageMagnitudes[PIXEL_COLUMNS]; 
 static double runningAverageMagnitude[PIXEL_COLUMNS]; 
@@ -62,36 +64,43 @@ static void runningAverage() {
   for(uint16_t col = 0; col < PIXEL_COLUMNS; col++) {
     runningAverageMagnitude[col] = (static_cast <int>(averageMagnitudes[col]) + runningAverageMagnitude[col])/ 2; 
   }
+  for(uint16_t i = 0; i < PIXEL_COLUMNS; i++) {
+    Serial.printf("%lf, ", runningAverageMagnitude[i]); 
+   }
+  Serial.println(); 
 }
 
 
 static void averageBinsToColumns() {
     float diff;
     double avg_mag;
-    size_t bin; 
+    uint16_t bin = 0; 
+    // uint16_t bins_per_column = [2]
+    uint16_t binsPerColumn[PIXEL_COLUMNS] = {3, 4, 6, 12, 25, 47, 92, 323};
 
     for(size_t i = 0; i < PIXEL_COLUMNS; i++) {
-      avg_mag = 0; 
-      for(size_t j = 0; j < BINS_PER_COL; j++) {
+      averageMagnitudes[i] = 0; 
+      for(size_t j = 0; j < binsPerColumn[i]; j++) {
 
-        bin = i * BINS_PER_COL + j; 
-        if(bin < 2) {
-          continue; 
+        if ( bin >= 512) {
+          Serial.println("ERROR, index overflowed"); 
         }
-        if(bin > 1024) {
-          Serial.println("LESS THAN 1024"); 
-        }
-        if(vReal[bin] < 0.0) {
-          Serial.println("magnitude less than ZERO"); 
-        }
-        avg_mag += vReal[bin] / BINS_PER_COL; 
+        // bin = i * BINS_PER_COL + j; 
+        // if(bin < 2) {
+        //   continue; 
+        // }
+        averageMagnitudes[i] += vReal[bin] / binsPerColumn[i]; // / BINS_PER_COL; 
+        bin++;
       }
-      averageMagnitudes[i] = avg_mag; 
+      // averageMagnitudes[i] = avg_mag; 
     } 
-    // for(uint16_t i = 0; i < PIXEL_ROWS; i++) {
-    //   Serial.printf("%lf, ", averageMagnitudes[i]); 
-    // }
-    // Serial.println(); 
+
+}
+
+static void normalize(){
+  for(uint16_t i = 0; i < PIXEL_COLUMNS; i++) {
+    averageMagnitudes[i] *= multipliers[i]; 
+  }
 }
 
 
@@ -123,6 +132,7 @@ static void displayColumns() {
 
 void displayFFT(){
   averageBinsToColumns(); 
+  normalize(); 
   runningAverage();  
   displayColumns(); 
 }
@@ -140,12 +150,12 @@ void loop() {
   uint32_t sampleStartTime;  
   for(int i = 0; i < SAMPLE_COUNT; i++) {
     sampleStartTime = micros();
-    vReal[i] = analogRead(MIC_PIN); 
+    vReal[i] = analogRead(MIC_PIN);
     vImag[i] = 0; 
     while(micros() - sampleStartTime < SAMPLING_PERIOD_uS) {/*wait*/ }
   }
-  // FFT.dcRemoval(); 
-  FFT.windowing(FFT_WIN_TYP_HAMMING, FFT_FORWARD); 
+  FFT.dcRemoval(); 
+  // FFT.windowing(FFT_WIN_TYP_HAMMING, FFT_FORWARD); 
   FFT.compute(FFT_FORWARD); 
   FFT.complexToMagnitude();
   displayFFT(); 
