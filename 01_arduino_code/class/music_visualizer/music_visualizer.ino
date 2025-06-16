@@ -147,23 +147,6 @@ void loop() {
   // FFT.dcRemoval(); 
   FFT.windowing(FFT_WIN_TYP_HAMMING, FFT_FORWARD); 
   FFT.compute(FFT_FORWARD); 
-  FFT.complexToMagnitude(); 
-  
-  // for(int i = 0; i < MI; i++) {
-  //   Serial.print(i); 
-  //   Serial.print(": "); 
-  //   Serial.println(vReal[i]); 
-  //   if(vReal[i] < 0.0) {
-  //     Serial.println("NEGATIVE"); 
-  //   }
-  // }
-  // Serial.println();
-  // for(uint16_t i = 0; i < PIXEL_ROWS; i++) {
-  //   for(uint16_t j = 0; j < PIXEL_COLUMNS; j++) {
-  //     setArrColor(i, j, 0xff); 
-  //   }
-  // // }
-  // pixels.show(); 
-
+  FFT.complexToMagnitude();
   displayFFT(); 
 }
