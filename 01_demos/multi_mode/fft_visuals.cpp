@@ -20,7 +20,7 @@ const size_t magnitude_division =75;
 const size_t magnitude_offset = 1300; 
 const uint16_t average_weight = 3; 
 const uint32_t normalizing_offsets[num_columns] = {18000, 225, 400, 650, 900, 1100, 1300, 1400}; 
-const uint32_t normalizing_scales[num_columns] = {75, 95, 75, 25, 25, 45, 65, 50}; 
+const uint32_t normalizing_scales[num_columns] = {115, 105, 75, 10, 10, 45, 65, 50}; 
 static uint16_t binsPerColumn[num_columns] = {3, 4, 6, 12, 25, 47, 92, 323}; 
 
 AudioInfo info(samples_per_second, channel_count, bits_per_sample);
@@ -137,7 +137,7 @@ static void displayColumnTops(uint16_t col) {
 static void displayColumns() {
 
   for(size_t col = 0; col < num_columns; col++) {
-    displayColumnTops(col);
+    displayFullColumns(col);
   }
   pixels->show();
   Serial.println(); 
