@@ -2,6 +2,7 @@
 // More info can be found https://en.wikipedia.org/wiki/Plasma_effect
 #include "plasma_state.h"
 #include "led_matrix.h"
+#include <math.h>
 #define FRAME_SCALE 0.3
 #define INCREMENT_MAX 0xffff
 
@@ -24,39 +25,33 @@ static uint16_t get_pixel_color(Adafruit_NeoPixel *pixels, float x_base, float y
 
 }
 
-static void calc_frame(uint16_t hue_offset, Adafruit_NeoPixel *pixels) {
+static void calc_frame(uint16_t hue_offset, float phase, Adafruit_NeoPixel *pixels) {
   float x_norm, y_norm;
   uint16_t hue;
-  float step = 0.02;
   uint32_t color;
-  for(float i = -1; i < 1; i+=step) {
-    for (int x = 0; x < PIXEL_COLUMNS; x++) {
-        for (int y = 0; y < PIXEL_ROWS; y++) {
-            hue = get_pixel_color(pixels, x * i, y * (-1 *i)); 
-            color = pixels->ColorHSV(hue + hue_offset); 
-            setArrColor(pixels, y, x, color);
-        }
-    }
-    pixels->show();
-    delay(10);   
-  }
 
-  for(float i = 1; i > -1; i-=step) {
     for (int x = 0; x < PIXEL_COLUMNS; x++) {
         for (int y = 0; y < PIXEL_ROWS; y++) {
-            hue = get_pixel_color(pixels, x * i, y * (-1 *i)); 
+            hue = get_pixel_color(pixels, x * phase, y * (-1 *phase)); 
             color = pixels->ColorHSV(hue + hue_offset); 
             setArrColor(pixels, y, x, color);
         }
     }
     pixels->show();
-    delay(10);   
-  }
+    delay(10);
 }
 
 void plasma_state :: update() {
   static uint16_t hue_offset = 0; 
-  static size_t i = 0; 
-  calc_frame(hue_offset, mPixels);
-  hue_offset += 2048;
+  static float phase = -2.0; 
+  static const float step = 0.02;
+
+  calc_frame(hue_offset, 1 - fabsf(phase), mPixels);
+  phase+=step; 
+
+  if(phase > 2.0) {
+    hue_offset += 2048;
+    phase = -2.0;
+  }
+
 }

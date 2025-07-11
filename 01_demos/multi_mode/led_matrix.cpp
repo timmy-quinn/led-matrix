@@ -32,7 +32,7 @@ void setArrColor(Adafruit_NeoPixel *px, uint16_t row, uint16_t col, uint32_t col
   px->setPixelColor(pixel, color); 
 }
 
-void setBitMapColor(Adafruit_NeoPixel *px, bitmap_t *map, uint32_t color) {
+void setBitMapColor(Adafruit_NeoPixel *px, const bitmap_t *map, uint32_t color) {
   uint32_t newColor; 
   for(size_t row = 0; row < PIXEL_ROWS; row++) {
     for(size_t col = 0; col < PIXEL_COLUMNS; col++) {

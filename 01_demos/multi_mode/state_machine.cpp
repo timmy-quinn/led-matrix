@@ -10,6 +10,7 @@ static size_t current_state_ix;
 uint16_t button_press_count;  
 static void IRAM_ATTR button_press_isr() {
   button_press_count++; 
+  Serial.println("button");
 }
 
 static bool is_button_pressed() {
