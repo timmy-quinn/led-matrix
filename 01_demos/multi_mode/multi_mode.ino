@@ -29,10 +29,9 @@ fft_visuals_state fft_state(&pixels);
 plasma_state plas_state(&pixels); 
 
 static led_matrix_state *matrix_states[] = {
-  &fft_state, 
-  &smiley_state, 
   &plas_state, 
-
+  &smiley_state, 
+  &fft_state,
 }; 
 
 void setup() { 

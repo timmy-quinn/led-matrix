@@ -20,7 +20,7 @@ uint32_t intToColor(uint32_t color, Adafruit_NeoPixel *pixels);
 
 void setArrColor(Adafruit_NeoPixel *px, uint16_t row, uint16_t col, uint32_t color); 
 
-void setBitMapColor(Adafruit_NeoPixel *px, bitmap_t *map, uint32_t color); 
+void setBitMapColor(Adafruit_NeoPixel *px, const bitmap_t *map, uint32_t color); 
 
 
 #endif
