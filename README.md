@@ -4,7 +4,7 @@ A simple 8 by 8 LED matrix made from easy-to-find Neopixel LED strips,
 adhered to a laser-cut baseboard, and mounted in a 3D printed case. 
 
 Control is provided by an ESP32 microcontroller. Code written in the 
-Arduino IDE. Several demos can be found in [01_demos](01_demos).
+Arduino IDE. Several demos can be found in [01_demos](01_demos).  
   
 
 ![Music visualizer in the dark](04_photos/dark_image.jpg)  
@@ -44,9 +44,7 @@ _More photos to come!_
 2. Using a soldering iron, insert the 4 M3 heat-set inserts into the outer 
 threaded insert holes. Insert the 8 M2 heat-set inserts into the remaining 
 holes.  
-
 ![Heat set inserts](04_photos/heat_set_inserts.jpg)  
-
 3. Cut out the LED board, with dimensions matching those in the CAD file, 
 or use a laser cutter. 
 4. Cut the LED strip into sections of 8, cutting down the center of the 
@@ -78,7 +76,6 @@ header pins. Insert the MAX9814 to the corresponding header pins.
 14. Super glue magnets to the exterior of the case, and the interior of the cover.  
 Ensure that the magnets are orientated such that when the cover is placed 
 onto the case, the magnets attract each other and do not repel each other. 
-
 ![Magnets inserted into exterior](04_photos/magnet_inserts.jpg)  
 15. Cut a strip of your parchment paper or other diffuser material, using 
 the front of the base as a guide. You can leave a little room around the
