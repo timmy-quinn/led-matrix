@@ -5,6 +5,10 @@ adhered to a laser-cut baseboard, and mounted in a 3D printed case.
 
 Control is provided by an ESP32 microcontroller. Code written in the 
 Arduino IDE. Several demos can be found in [01_demos](01_demos).
+  
+
+![Music visualizer in the dark](04_photos/dark_image.jpg)  
+*LED-matrix v1.0*
 
 ### Materials
 
@@ -71,7 +75,7 @@ to D22.
 12. Screw the proto-board to case. Insert the ESP32 board into the female 
 header pins. Insert the MAX9814 to the corresponding header pins. 
 13. Connect the JST connector from the proto board to the LED strips. 
-14. Glue magnets to the exterior of the case, and the interior of the cover.  
+14. Super glue magnets to the exterior of the case, and the interior of the cover.  
 Ensure that the magnets are orientated such that when the cover is placed 
 onto the case, the magnets attract each other and do not repel each other. 
 
@@ -83,9 +87,9 @@ edges to make sure that the diffuser material covers the entire grid case.
 16. Place the diffuser on the base, then put the cover over it.  
 ![Diffuser inserted](04_photos/parchment_inserted.jpg)  
 17. Screw the back to the case using M3 screws.     
-![back attached](04_photos/back_attached.jpg)
 edges to make sure that the diffuser material covers the entire grid case. 
-16. Place the diffuser on the base, then put the cover over it. 
-17. Screw the back to the case. 
+![back attached](04_photos/back_attached.jpg)  
 
-
+*And now you're done! Upload one of the demos to the ESP32 to verify the board.*   
+  
+![](04_photos/smiley.jpg)

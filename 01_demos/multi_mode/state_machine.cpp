@@ -39,8 +39,8 @@ void state_machine_init(uint8_t button_pin, led_matrix_state **state, size_t cou
 }
 
 void state_machine_update() {
+  // Note, some inconsistency with state transition and button presses
   if(is_button_pressed()) {
-
     switch_state(); 
     Serial.printf("switching states to state: %u", current_state_ix); 
   }
