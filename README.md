@@ -11,7 +11,6 @@ Arduino IDE. Several demos can be found in [01_demos](01_demos).
 *LED-matrix v1.0*
 
 ### Materials
-
 - 1 x ESP32 Devkit V1
 - 1 x MAX9814 Module
 - 1 x WS2812 LED Strip (64 LEDs, 60 Pixel/meter)
