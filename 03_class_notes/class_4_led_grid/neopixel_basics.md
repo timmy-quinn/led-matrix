@@ -46,7 +46,7 @@ void setup() {
 To set all of the pixels, we can also do this: 
 ```c++
     // Using a for loop, loop over all of the pixels
-    for(int pix = 0; i < PIXEL_COUNT; i++) {
+    for(int pix = 0; pix < PIXEL_COUNT; pix++) {
       pixels.setPixelColor(pix, red, green, blue);
     }
 ```
@@ -56,7 +56,7 @@ value in a single integer.
 ```c++
     int color = pixels.Color(red, green, blue);
     // Using a for loop, loop over all of the pixels
-    for(int pix = 0; i < PIXEL_COUNT; i++) {
+    for(int pix = 0; pix < PIXEL_COUNT; pix++) {
       pixels.setPixelColor(pix, color); // Just pass in the color to the led matrix
     }
 ```
