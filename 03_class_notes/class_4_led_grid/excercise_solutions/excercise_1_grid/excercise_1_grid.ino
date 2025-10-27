@@ -22,8 +22,9 @@ void setGridPixel(int row, int col, int color) {
     pixel = row * PIXEL_COLS_TOTAL + col;
   } 
   else {
-    pixel = row * PIXEL_COLS_TOTAL + (PIXEL_COLS_TOTAL - col);
+    pixel = row * PIXEL_COLS_TOTAL + (PIXEL_COLS_VISIBLE - col - 1);
   }
+   pixels.setPixelColor(pixel, color);
 }
 
 void setup() {
