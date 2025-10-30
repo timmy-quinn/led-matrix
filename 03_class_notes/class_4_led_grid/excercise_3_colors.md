@@ -26,25 +26,27 @@ Adafruit_NeoPixel pixels(PIXEL_COUNT, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
 void setGridPixel(int row, int col, int color) {
     /*
-    * Use the function you wrote in excercise 1
+    * Write a function that takes in a row and column, then sets the 
+    * corresponding pixel.
     */
 }
 
 void setGridColumn(int col, int height, int color) {
     /*
-    * Use the function from excercise 2
+    * Write a function that takes in a column number and height, then sets the 
+    * corresponding pixels.
     */
 }
 
-int getColumnColor(col) {
+int getColumnColor(int col) {
     /*
-    * Write a column to get the column color
+    * Write a function to get the column color
     */
 }
 
-void setGridColumnWithColor(col, height) {
+void setGridColumnWithColor(int col, int height) {
     int color = getColumnColor(col);
-    setGridColumn(int col, int height, int color) {
+    setGridColumn(col, height, color);
 }
 
 void setup() {
@@ -64,18 +66,19 @@ void loop() {
     for(int col = 0; col < PIXEL_COLS_VISIBLE; col++) {
         height = col + 1;
         setGridColumnWithColor(col, height);
-        delay(300);
+        delay(50);
         pixels.show();
     }
+    delay(1000);
 
-    for(int col = 0; col < PIXEL_COLS_VISIBLE; col++) {
+    for(int col = PIXEL_COLS_VISIBLE - 1; col >= 0; col--) {
         height = PIXEL_COLS_VISIBLE - col;
         setGridColumnWithColor(col, height);
-        delay(300);
+        delay(50);
         pixels.show();
     }
-}
-```
+    delay(1000);
+}```
 
 ### Tips
 1. Another way to get a pixel color is to use the ````Adafruit_Neopixel.ColorHSV```` function.
@@ -85,6 +88,9 @@ intensity or purity of the color. Value is the brightness.
 The NeoPixel function takes values between 0 and 65535 for the hue. The saturation 
 and value are integers between 0 and 255.  
 If you increment the hue, you can create a rainbow effect.
+More info can be found [here](https://adafruit.github.io/Adafruit_NeoPixel/html/class_adafruit___neo_pixel.html#a1f16aee5b96e16e62598f826e292b23b) 
+in the Adafruit_NeoPixel documentation.
+
 
 2. You may want to consider storing the colors of each column in an array. 
 (This can be done as an alternative approach to using the ````ColorHSV```` 

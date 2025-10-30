@@ -24,7 +24,8 @@ Adafruit_NeoPixel pixels(PIXEL_COUNT, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
 void setGridPixel(int row, int col, int color) {
     /*
-    * Use the function you wrote in excercise 1
+    * Write a function that takes in a row and column, then sets the 
+    * corresponding pixel.
     */
 }
 
@@ -46,7 +47,7 @@ void setup() {
 }
 
 void loop() {
-    int red = 0;
+    int red = 255;
     int blue = 0; 
     int green = 0;
 
@@ -57,16 +58,16 @@ void loop() {
     for(int col = 0; col < PIXEL_COLS_VISIBLE; col++) {
         height = col + 1;
         setGridColumn(col, height, color);
-        delay(300);
-        pixels.show();
     }
-
+    pixels.show();
+    delay(1000);
     for(int col = 0; col < PIXEL_COLS_VISIBLE; col++) {
         height = PIXEL_COLS_VISIBLE - col;
         setGridColumn(col, height, color);
-        delay(300);
-        pixels.show();
     }
+    pixels.show();
+    delay(1000);
+
 }
 ```
 

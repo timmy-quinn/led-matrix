@@ -18,13 +18,8 @@ void setGridPixel(int row, int col, int color) {
   * corresponding pixel.
   */
   int pixel;
-  if(row % 2) {
-    pixel = row * PIXEL_COLS_TOTAL + col;
-  } 
-  else {
-    pixel = row * PIXEL_COLS_TOTAL + (PIXEL_COLS_VISIBLE - col - 1);
-  }
-   pixels.setPixelColor(pixel, color);
+  pixel = row * PIXEL_COLS_TOTAL + col;
+  pixels.setPixelColor(pixel, color);
 }
 
 void setup() {
@@ -48,7 +43,7 @@ void loop() {
     // Our pixels are RGB. We can set the value of each LED in the pixels. 
     // The combination will determine the color. 
     for(int row = 0; row < PIXEL_ROWS; row++) {
-        for(int col = 0; col < PIXEL_COLS_VISIBLE; i++) {
+        for(int col = 0; col < PIXEL_COLS_VISIBLE; col++) {
             setGridPixel(row, col, color);
             delay(300);
             pixels.show();

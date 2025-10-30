@@ -18,12 +18,9 @@ void setGridPixel(int row, int col, int color) {
     * corresponding pixel.
     */
     int pixel;
-    if(row % 2) {
-      pixel = row * PIXEL_COLS_TOTAL + col;
-    } 
-    else {
-      pixel = row * PIXEL_COLS_TOTAL + (PIXEL_COLS_TOTAL - col);
-    }
+    pixel = row * PIXEL_COLS_TOTAL + col;
+    pixels.setPixelColor(pixel, color);
+    
 }
 
 void setGridColumn(int col, int height, int color) {
@@ -40,11 +37,11 @@ void setGridColumn(int col, int height, int color) {
     }
 }
 
-int getColumnColor(col) {
+int getColumnColor(int col) {
     /*
-    * Write a column to get the column color
+    * Write a function to get the column color
     */
-    int maxHue = 65535; 
+    int maxHue = 65535;
     int maxSaturation = 255;
     int maxValue = 255;
 
@@ -53,9 +50,9 @@ int getColumnColor(col) {
     return pixels.ColorHSV(hue, maxSaturation, maxValue); 
 }
 
-void setGridColumnWithColor(col, height) {
+void setGridColumnWithColor(int col, int height) {
     int color = getColumnColor(col);
-    setGridColumn(int col, int height, int color) {
+    setGridColumn(col, height, color);
 }
 
 void setup() {
@@ -72,17 +69,19 @@ void loop() {
     int height = 0;
     // Our pixels are RGB. We can set the value of each LED in the pixels. 
     // The combination will determine the color. 
-    for(int col = 0; col < PIXEL_COLS_VISIBLE; i++) {
+    for(int col = 0; col < PIXEL_COLS_VISIBLE; col++) {
         height = col + 1;
         setGridColumnWithColor(col, height);
-        delay(300);
+        delay(50);
         pixels.show();
     }
+    delay(1000);
 
-    for(int col = 0; col < PIXEL_COLS_VISIBLE; i++) {
+    for(int col = PIXEL_COLS_VISIBLE - 1; col >= 0; col--) {
         height = PIXEL_COLS_VISIBLE - col;
         setGridColumnWithColor(col, height);
-        delay(300);
+        delay(50);
         pixels.show();
     }
+    delay(1000);
 }
