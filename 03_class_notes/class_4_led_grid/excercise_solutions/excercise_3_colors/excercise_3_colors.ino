@@ -55,6 +55,16 @@ void setGridColumnWithColor(int col, int height) {
     setGridColumn(col, height, color);
 }
 
+void setupPixels() {
+    // Set the brightness. 
+    // We can set the maximum brightness of our LEDs. 
+    // We only need to set this once
+    pixels.setBrightness(15);
+
+    // Initialize the pixels. Only needs to be done once
+    pixels.begin();
+}
+
 void setup() {
     // Set the brightness. 
     // We can set the maximum brightness of our LEDs. 
